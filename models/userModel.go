@@ -7,7 +7,9 @@ type Users struct {
 	gorm.Model // by default create ID CreatedAt UpdatedAt DeletedAt
     
 	Name   string `json:"name"`
-	Person string `json:"person"`
+	Email string  `json:"email"`
+	Password string `json:"password"`
+	Role string `json:"role"`
 	
 
 }

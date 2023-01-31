@@ -5,23 +5,43 @@ import (
 	"emad.com/models"
 	"github.com/gofiber/fiber/v2"
 	"github.com/jinzhu/gorm"
+	"golang.org/x/crypto/bcrypt"
 )
 
+type Request struct {
+	Name     string
+	Email    string
+	Role    string
+	Password string
+}
 
  func Create (c *fiber.Ctx) error {
 
-	    var user = new(models.Users)
+	    var req = new(Request)
 
-		if err := c.BodyParser(user); err != nil {
+		if err := c.BodyParser(req); err != nil {   
+			return err	
+		}
 
-		    panic("user not inserted")
+		if req.Name == "" || req.Role == "" || req.Password == "" {
+			return fiber.NewError(500, "all data required")
+		}
+		hash, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
 
-			
+		if err != nil {
+			return err
+		}
+		
+		user := models.Users{
+			Name: req.Name,
+			Email: req.Email,
+			Role: req.Role,
+			Password: string(hash),
 		}
 
 		if err := config.DB.Create(&user).Error; err != nil {
 
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+		return c.Status(400).JSON(fiber.Map{
 			"message": err.Error(),
 		})
 	    }
@@ -38,7 +58,7 @@ import (
 
 		if err := config.DB.Find(&user).Error; err != nil {
 
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+		return c.Status(400).JSON(fiber.Map{
 			"message": err.Error(),
 		})
 	    }
@@ -64,9 +84,7 @@ import (
 		 })
 			}
 
-			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"message": err.Error(),
-		})
+			return err
 		} 
 
 		
@@ -80,23 +98,34 @@ import (
 
 	func Update (c *fiber.Ctx) error {
 	    
-		var user = new(models.Users)
+		var req = new(Request)
+	     user := new(models.Users)
 	
 		 id :=c.Params("id")
 
-		 err := config.DB.First(&user, id).Error
+		  err := config.DB.First(&user, id).Error
 			
 		 if err == gorm.ErrRecordNotFound {
-				return c.Status(501).JSON(fiber.Map{
-			"message": "user does not exsist",
-		 })
+				return err 
 			}
 
-			if err := c.BodyParser(&user); err != nil {
-		return c.Status(503).JSON(fiber.Map{
-			"message": err.Error(),
-		})
-	}
+			if err := c.BodyParser(&req); err != nil {
+		     return err
+		}
+		if req.Name == "" || req.Role == "" || req.Password == "" {
+			return fiber.NewError(500, "all data required")
+		}
+
+		hash, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
+
+		if err != nil {
+			return err
+		}
+        
+		user.Name = req.Name
+		user.Role = req.Role
+		user.Password = string(hash)
+		
 
 	if  config.DB.Save(&user).RowsAffected == 0 {
 		return c.Status(503).JSON(fiber.Map{
@@ -112,6 +141,9 @@ import (
 		})
 		
 	}
+
+	
+	
 
 
 	func Delete (c *fiber.Ctx) error {
