@@ -12,11 +12,12 @@ import (
 
 
 func CheckToken(c *fiber.Ctx) error {
+	
+	
 	err := godotenv.Load()
 if err != nil {
 	return err
 }
-
 secretKey := os.Getenv("SECRET_KEY")
 
 	// Get the token from the request header

@@ -136,7 +136,7 @@ type Request struct {
 			
 		
 		return c.JSON(fiber.Map{
-			"message": "one user updated",
+			"message": "One User updated",
 			"user": user,
 		})
 		
