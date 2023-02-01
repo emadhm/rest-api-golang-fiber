@@ -41,9 +41,7 @@ type Request struct {
 
 		if err := config.DB.Create(&user).Error; err != nil {
 
-		return c.Status(400).JSON(fiber.Map{
-			"message": err.Error(),
-		})
+		return err
 	    }
 
 		return c.JSON(fiber.Map{

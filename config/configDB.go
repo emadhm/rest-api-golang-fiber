@@ -15,11 +15,12 @@ func ConnectDB()  {
 	if err != nil {
 
 		log.Fatalf("Could not connect to database: %s", err)
-		 panic(err)
 	}
 
-
-	db.AutoMigrate(&models.Users{})
+	db.AutoMigrate(
+		&models.Users{}, 
+		models.Auths{},
+	)
 	DB = db
 	
 }
