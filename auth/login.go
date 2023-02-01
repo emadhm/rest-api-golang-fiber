@@ -3,7 +3,6 @@ package auth
 import (
 	"os"
 	"time"
-
 	"emad.com/config"
 	"emad.com/models"
 	"github.com/dgrijalva/jwt-go"
@@ -14,7 +13,6 @@ import (
 )
 
 type LoginRequest struct {
-
 Email string
 Password string
 }
@@ -58,7 +56,7 @@ func Login (c *fiber.Ctx) error {
 
 	  checkAuth(int(user.ID),token)
 
-   return c.JSON(fiber.Map{
+        return c.JSON(fiber.Map{
 			"message": "loged in seccessfully",
 			"user": user,
 			"token":token,
@@ -67,7 +65,7 @@ func Login (c *fiber.Ctx) error {
 
 }
 
-func generateJWT(id int) (string, error) {
+  func generateJWT(id int) (string, error) {
 
 	err := godotenv.Load()
 	if err != nil {
